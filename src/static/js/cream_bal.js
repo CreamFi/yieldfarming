@@ -18,20 +18,20 @@ async function main() {
 
     const stakedAmount = (await CREAM_STAKING_POOL.balanceOf(App.YOUR_ADDRESS)) / 1e18;
     const earnedCREAM = (await CREAM_STAKING_POOL.earned(App.YOUR_ADDRESS)) / 1e18;
-    const totalAmount = (await CREAM_WETH_BPT_TOKEN.totalSupply()) / 1e18;
-    const totalStakedAmount = (await CREAM_WETH_BPT_TOKEN.balanceOf(CREAM_BPT_POOL_ADDR)) / 1e18;
+    const totalBPTAmount = (await CREAM_WETH_BPT_TOKEN.totalSupply()) / 1e18;
+    const totalStakedBPTAmount = (await CREAM_WETH_BPT_TOKEN.balanceOf(CREAM_BPT_POOL_ADDR)) / 1e18;
     const totalCREAMAmount = (await CREAM_TOKEN.balanceOf(CREAM_WETH_BPT_TOKEN_ADDR)) / 1e18;
     const totalWETHAmount = (await WETH_TOKEN.balanceOf(CREAM_WETH_BPT_TOKEN_ADDR)) / 1e18;
 
-    const CREAMPerBPT = totalCREAMAmount / totalAmount;
-    const WETHPerBPT = totalWETHAmount / totalAmount;
+    const CREAMPerBPT = totalCREAMAmount / totalBPTAmount;
+    const WETHPerBPT = totalWETHAmount / totalBPTAmount;
     
     const weekly_reward = await get_synth_weekly_rewards(CREAM_STAKING_POOL);
     const nextHalving = await getPeriodFinishForReward(CREAM_STAKING_POOL)
 
     const unstakedBPT = await CREAM_WETH_BPT_TOKEN.balanceOf(App.YOUR_ADDRESS) / 1e18;
 
-    const rewardPerToken = await CREAM_STAKING_POOL.rewardPerToken() / 1e18;
+    const rewardPerToken = weekly_reward / totalStakedBPTAmount;
 
     const prices = await lookUpPrices(["cream-2", "ethereum"]);
     const CREAMPrice = prices["cream-2"].usd;
@@ -46,10 +46,10 @@ async function main() {
     _print(`        = ${toDollar(BPTPrice)}\n`);
 
     _print("========== STAKING =========")
-    _print(`There are total   : ${totalAmount} BPT issued by CREAM ETH Balancer Pool.`);
-    _print(`There are total   : ${totalStakedAmount} BPT staked in CREAM's BPT staking pool.`);
-    _print(`                  = ${toDollar(totalStakedAmount * BPTPrice)}\n`);
-    _print(`You are staking   : ${stakedAmount} BPT (${toFixed(stakedAmount * 100 / totalStakedAmount, 3)}% of the pool)`);
+    _print(`There are total   : ${totalBPTAmount} BPT issued by CREAM ETH Balancer Pool.`);
+    _print(`There are total   : ${totalStakedBPTAmount} BPT staked in CREAM's BPT staking pool.`);
+    _print(`                  = ${toDollar(totalStakedBPTAmount * BPTPrice)}\n`);
+    _print(`You are staking   : ${stakedAmount} BPT (${toFixed(stakedAmount * 100 / totalStakedBPTAmount, 3)}% of the pool)`);
     _print(`                  = [${CREAMPerBPT * stakedAmount} CREAM, ${WETHPerBPT * stakedAmount} ETH]`);
     _print(`                  = ${toDollar(CREAMPerBPT * stakedAmount * CREAMPrice + WETHPerBPT * stakedAmount * ETHPrice)}\n`);
 

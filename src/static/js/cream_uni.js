@@ -31,7 +31,7 @@ async function main() {
 
     const unstakedUNI = await CREAM_WETH_UNI_TOKEN.balanceOf(App.YOUR_ADDRESS) / 1e18;
 
-    const rewardPerToken = await CREAM_STAKING_POOL.rewardPerToken() / 1e18;
+    const rewardPerToken = weekly_reward / totalStakedUNIAmount;
 
     const prices = await lookUpPrices(["cream-2", "ethereum"]);
     const CREAMPrice = prices["cream-2"].usd;
